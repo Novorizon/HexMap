@@ -1,0 +1,12 @@
+{
+  "name": "com.guanjinbiao.hexmap",
+  "displayName": "Hex Map",
+  "description": "Hex Map",
+  "version": "1.0.0",
+  "unity": "2020.2",
+  "license": "MIT",
+  "author": {
+    "name": "Guan Jinbiao",
+    "email": "guanjinbiao@gyyx.cn"
+  }
+}
