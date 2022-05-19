@@ -16,17 +16,37 @@ public static class HexMetrics
     public static readonly int FeatureRandomNumberMask = 0x00010000;
     public static readonly int FeatureRandomDirectionMask = 0x00020000;
     public static readonly int FeatureTypeMask = 0x70000000;
-    public static readonly int FeatureTypeBit =28;
+    public static readonly int FeatureTypeNormalMask = 0x10000000;
+    public static readonly int FeatureTypeSpecialMask = 0x20000000;
+    public static readonly int FeatureTypeBit = 28;
+    public static float outerRadius = 1;
 
+    public static float Radius
+    {
+        get { return outerRadius; }
+        set
+        {
+            outerRadius = value; innerRadius = outerRadius * outerToInner;
+            corners = new Vector3[] {
+                new Vector3(0f, 0f, outerRadius),
+        new Vector3(innerRadius, 0f, 0.5f * outerRadius),
+        new Vector3(innerRadius, 0f, -0.5f * outerRadius),
+        new Vector3(0f, 0f, -outerRadius),
+        new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
+        new Vector3(-innerRadius, 0f, 0.5f * outerRadius),
+        new Vector3(0f, 0f, outerRadius)
+        };
+
+        }
+    }
 
     public const int FeatureCount = 5;
 
     public const float outerToInner = 0.866025404f;
     public const float innerToOuter = 1f / outerToInner;
 
-    public const float outerRadius = 10f;
 
-    public const float innerRadius = outerRadius * outerToInner;
+    public static float innerRadius = outerRadius * outerToInner;
 
     public const float solidFactor = 0.8f;
 
@@ -75,6 +95,7 @@ public static class HexMetrics
     public const float hashGridScale = 0.25f;
 
     static HexHash[] hashGrid;
+    static bool useNoise;
 
     static Vector3[] corners = {
         new Vector3(0f, 0f, outerRadius),
@@ -93,15 +114,23 @@ public static class HexMetrics
     };
 
     public static Texture2D noiseSource;
+    public static Texture2D NoiseSource
+    {
+        get { return noiseSource; }
+        set { noiseSource = value; }
+    }
+
+    public static bool UseNoise
+    {
+        get { return useNoise; }
+        set { useNoise = value; }
+    }
 
     public static Vector4 SampleNoise(Vector3 position)
     {
-        if (noiseSource == null)
+        if (!useNoise)
             return Vector4.zero;
-        return noiseSource.GetPixelBilinear(
-            position.x * noiseScale,
-            position.z * noiseScale
-        );
+        return noiseSource.GetPixelBilinear(position.x * noiseScale, position.z * noiseScale);
     }
 
     public static void InitializeHashGrid(int seed)
@@ -236,6 +265,8 @@ public static class HexMetrics
 
     public static Vector3 Perturb(Vector3 position)
     {
+        if (!useNoise)
+            return position;
         Vector4 sample = SampleNoise(position);
         position.x += (sample.x * 2f - 1f) * cellPerturbStrength;
         position.z += (sample.z * 2f - 1f) * cellPerturbStrength;

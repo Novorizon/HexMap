@@ -11,11 +11,11 @@ namespace HexMap
         {
             TriangulateEdgeFan(center, e, cell.id);
 
-            if (cell.HasRoads)
-            {
-                Vector2 interpolators = GetRoadInterpolators(direction, cell);
-                TriangulateRoad(center, Vector3.Lerp(center, e.v1, interpolators.x), Vector3.Lerp(center, e.v5, interpolators.y), e, cell.HasRoadThroughEdge(direction), cell.id);              //迷雾
-            }
+            //if (cell.HasRoads)
+            //{
+            //    Vector2 interpolators = GetRoadInterpolators(direction, cell);
+            //    TriangulateRoad(center, Vector3.Lerp(center, e.v1, interpolators.x), Vector3.Lerp(center, e.v5, interpolators.y), e, cell.HasRoadThroughEdge(direction), cell.id);              //迷雾
+            //}
         }
 
 

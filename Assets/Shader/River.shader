@@ -18,7 +18,7 @@ Shader "Custom/River"
     }
     SubShader
     {
-        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Transparent" }
+        Tags { "RenderPipeline" = "UniversalPipeline" "RenderType" = "Transparent" "Queue" = "Geometry" }
         
         Pass
         {

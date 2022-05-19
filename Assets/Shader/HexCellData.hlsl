@@ -1,4 +1,4 @@
-﻿
+
 
 float4 _HexCellData_TexelSize;
 
@@ -27,6 +27,8 @@ struct Varyings
                 
     float3 terrain : TEXCOORD4;
     float4 opacity : TEXCOORD5;
+
+    float4 shadowCoord : TEXCOORD6;
 };
 
 struct VaryingsTangent

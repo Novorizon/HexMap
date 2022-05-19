@@ -3,16 +3,18 @@ using UnityEngine;
 
 namespace HexMap
 {
-    public partial class HexChunkMgr
+    [Serializable]
+    public class HexChunkMgr
     {
         public HexChunk chunk;
 
         public Vector2Int Coordinate;
         public Vector3 center;
 
+        [NonSerialized]
         public HexCell[] cells;
 
-        public   HexChunkMgr()
+        public HexChunkMgr()
         {
 
         }
@@ -35,7 +37,7 @@ namespace HexMap
 
             chunk.Terrain.Clear();
             chunk.Rivers.Clear();
-            chunk.Roads.Clear();
+            //chunk.Roads.Clear();
             chunk.Water.Clear();
             chunk.WaterShore.Clear();
             chunk.Estuary.Clear();
@@ -47,7 +49,7 @@ namespace HexMap
             }
             chunk.Terrain.Apply();
             chunk.Rivers.Apply();
-            chunk.Roads.Apply();
+            //chunk.Roads.Apply();
             chunk.Water.Apply();
             chunk.WaterShore.Apply();
             chunk.Estuary.Apply();

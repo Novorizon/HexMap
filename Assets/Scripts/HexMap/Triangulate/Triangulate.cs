@@ -11,7 +11,6 @@ namespace HexMap
 
         static HexMesh terrain;
         static HexMesh rivers;
-        static HexMesh roads;
 
         static HexMesh water;
         static HexMesh waterShore;
@@ -22,7 +21,6 @@ namespace HexMap
         {
             Triangular.terrain = terrain;
             Triangular.rivers = rivers;
-            Triangular.roads = roads;
             Triangular.water = water;
             Triangular.waterShore = waterShore;
             Triangular.estuaries = estuaries;
@@ -33,7 +31,6 @@ namespace HexMap
         {
             Triangular.terrain = chunk.Terrain;
             Triangular.rivers = chunk.Rivers;
-            Triangular.roads = chunk.Roads;
             Triangular.water = chunk.Water;
             Triangular.waterShore = chunk.WaterShore;
             Triangular.estuaries = chunk.Estuary;
@@ -401,10 +398,10 @@ namespace HexMap
             terrain.AddQuadCellData(indices, w1, w2);
             terrain.AddQuadCellData(indices, w1, w2);
 
-            if (hasRoad)
-            {
-                TriangulateRoadSegment(e1.v2, e1.v3, e1.v4, e2.v2, e2.v3, e2.v4, w1, w2, indices);
-            }
+            //if (hasRoad)
+            //{
+            //    TriangulateRoadSegment(e1.v2, e1.v3, e1.v4, e2.v2, e2.v3, e2.v4, w1, w2, indices);
+            //}
         }
     }
 }

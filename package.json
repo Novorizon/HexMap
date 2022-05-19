@@ -2,11 +2,11 @@
   "name": "com.guanjinbiao.hexmap",
   "displayName": "Hex Map",
   "description": "Hex Map",
-  "version": "1.0.0",
+  "version": "1.0.0r",
   "unity": "2020.2",
   "license": "MIT",
   "author": {
-    "name": "Guan Jinbiao",
-    "email": "guanjinbiao@gyyx.cn"
+    "name": "Novorizon",
+    "email": "novorizon@hotmail.com"
   }
 }

@@ -20,134 +20,19 @@ namespace HexMap
 
         public void Clear()
         {
-            if (container)
+            if (transform && transform.Find("Features Container"))
             {
-                GameObject.DestroyImmediate(container.gameObject);
+                GameObject o = transform.Find("Features Container").gameObject;
+                if (o)
+                {
+                    GameObject.DestroyImmediate(o);
+                }
             }
             container = new GameObject("Features Container").transform;
             container.SetParent(transform, false);
         }
 
         public void Apply() { }
-
-
-        //public void AddFeatureRandom(HexCell cell, Vector3 position)
-        //{
-        //    if (cell.IsSpecial)
-        //    {
-        //        return;
-        //    }
-        //    for (int i = 0; i < cell.Features.Count; i++)
-        //    {
-        //        int levels = (int)((cell.Features[i] & HexMetrics.FeatureLevelMask) >> 48);
-        //        //擦除
-        //        if ((levels & 1) > 0)
-        //            continue;
-
-        //        levels = levels >> 1;
-
-        //        bool isrn = (cell.Features[i] & HexMetrics.FeatureRandomNumberMask) > 0;
-        //        bool isrd = (cell.Features[i] & HexMetrics.FeatureRandomDirectionMask) > 0;
-
-        //        HexHash hash = HexMetrics.SampleHashGrid(position);
-
-        //        if (!isrn)
-        //            continue;
-        //        if (hash.features[i] > 0.5f)
-        //            continue;
-
-
-        //        int[] features = new int[3] { (int)(cell.Features[i] & HexMetrics.FeatureMask[0]), (int)(cell.Features[i] & HexMetrics.FeatureMask[1]) >> 16, (int)(cell.Features[i] & HexMetrics.FeatureMask[2]) >> 32 };
-        //        for (int j = 0; j < 3; j++)
-        //        {
-        //            int level = levels & 1;
-        //            levels = levels >> 1;
-        //            if (isrn && hash.subfeatures[j] > 0.5f)
-        //                continue;
-        //            if (level > 0)
-        //            {
-        //                HexMapAssets.TryGetValue(features[j], out HexMapAsset Asset);
-        //                if (Asset == null)
-        //                {
-        //                    Debug.LogError("no prefab");
-        //                    continue;
-        //                }
-        //                GameObject prefab = Asset.asset;
-
-        //                if (prefab)
-        //                {
-        //                    GameObject instance = GameObject.Instantiate(prefab);
-        //                    position.y += instance.transform.localScale.y * 0.5f;
-        //                    instance.transform.localPosition = HexMetrics.Perturb(position);
-        //                    if (isrd)
-        //                        instance.transform.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);
-        //                    else
-        //                        instance.transform.localRotation = Quaternion.identity;
-        //                    instance.transform.SetParent(container, false);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //}
-
-        //public void AddFeature(HexCell cell, Vector3 position)
-        //{
-        //    if (cell.IsSpecial)
-        //    {
-        //        return;
-        //    }
-        //    for (int i = 0; i < cell.Features.Length; i++)
-        //    {
-        //        int levels = (int)((cell.Features[i] & HexMetrics.FeatureLevelMask) >> 48);
-        //        //擦除
-        //        if ((levels & 1) > 0)
-        //            continue;
-
-        //        levels = levels >> 1;
-
-        //        bool isrn = (cell.Features[i] & HexMetrics.FeatureRandomNumberMask) > 0;
-        //        bool isrd = (cell.Features[i] & HexMetrics.FeatureRandomDirectionMask) > 0;
-
-        //        HexHash hash = HexMetrics.SampleHashGrid(position);
-
-        //        if (isrn && hash.features[i] > 0.5f)
-        //            continue;
-
-
-        //        int[] features = new int[3] { (int)(cell.Features[i] & HexMetrics.FeatureMask[0]), (int)(cell.Features[i] & HexMetrics.FeatureMask[1]) >> 16, (int)(cell.Features[i] & HexMetrics.FeatureMask[2]) >> 32 };
-        //        for (int j = 0; j < 3; j++)
-        //        {
-        //            int level = levels & 1;
-        //            levels = levels >> 1;
-        //            if (isrn && hash.subfeatures[j] > 0.5f)
-        //                continue;
-        //            if (level > 0)
-        //            {
-        //                HexMapAssets.TryGetValue(features[j], out HexMapAsset Asset);
-        //                if (Asset == null)
-        //                {
-        //                    Debug.LogError("no prefab");
-        //                    continue;
-        //                }
-        //                GameObject prefab = Asset.asset;
-
-        //                if (prefab)
-        //                {
-        //                    GameObject instance = GameObject.Instantiate(prefab);
-        //                    position.y += instance.transform.localScale.y * 0.5f;
-        //                    instance.transform.localPosition = HexMetrics.Perturb(position);
-        //                    if (isrd)
-        //                        instance.transform.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);
-        //                    else
-        //                        instance.transform.localRotation = Quaternion.identity;
-        //                    instance.transform.SetParent(container, false);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //}
 
 
         public void AddFeatureRandom(HexCell cell, Vector3 position)
@@ -224,7 +109,7 @@ namespace HexMap
                 if (prefab)
                 {
                     GameObject instance = GameObject.Instantiate(prefab);
-                    position.y += instance.transform.localScale.y * 0.5f;
+                    //position.y += instance.transform.localScale.y * 0.5f;
                     instance.transform.localPosition = HexMetrics.Perturb(position);
                     if (isrd)
                         instance.transform.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);

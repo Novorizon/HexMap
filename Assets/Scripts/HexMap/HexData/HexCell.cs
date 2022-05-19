@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 namespace HexMap
 {
@@ -9,19 +10,143 @@ namespace HexMap
     {
         public HexCell()
         {
-            //terrainTypeIndex = 1;
+            terrainTypeIndex = 0;
         }
 
         public void Init(int i, int x, int z)
         {
             id = i;
             coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+            hexagon = Hexagon.FromXZ(x, z);
             roads = new bool[6];
-            terrainTypeIndex = 1;
+            terrainTypeIndex = 0;
             terrainOpacity = 255;
             Elevation = 0;
             features = new List<int>();
             neighbors = new HexCell[6];
+        }
+
+        public List<HexCell> GetRing(int r, bool radiusInRange = false)
+        {
+            List<HexCell> results = new List<HexCell>();
+            HexCell Start = this;
+            if (radiusInRange)
+            {
+                for (HexDirection i = HexDirection.NE; i <= HexDirection.NW; i++)
+                {
+                    for (int j = 0; j < r; j++)
+                    {
+                        Start = Start.GetNeighbor(i);
+                        results.Add(Start);
+                    }
+                }
+                return results;
+            }
+
+            HexCell[] Ends = new HexCell[6];
+            for (HexDirection i = HexDirection.NE; i <= HexDirection.NW; i++)
+            {
+                for (int j = 0; j < r; j++)
+                {
+                    Start = Start.GetNeighbor(i);
+                    if (Start == null)
+                    {
+                        break;
+                    }
+                }
+                Ends[(int)i] = Start;
+                Start = this;
+
+            }
+
+            for (HexDirection i = HexDirection.NE; i <= HexDirection.NW; i++)
+            {
+                Start = Ends[(int)i];
+                if (Start != null)
+                {
+                    HexDirection dnext = i.Next2();
+                    results.Add(Start);
+                    for (int j = 0; j < r; j++)
+                    {
+                        Start = Start.GetNeighbor(dnext);
+                        if (Start == null)
+                            break;
+                        results.Add(Start);
+                    }
+                }
+                else
+                {
+                    Start = Ends[(int)(i + 1) % 6];
+                    if (Start != null)
+                    {
+                        HexDirection dopp = i.Opposite();
+                        for (int j = 0; j < r; j++)
+                        {
+                            Start = Start.GetNeighbor(dopp);
+                            if (Start == null)
+                                break;
+                            results.Add(Start);
+                        }
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        public List<HexCell> GetAxisCells(int r)
+        {
+            List<HexCell> results = new List<HexCell>();
+            HexCell Start = this;
+
+            HexCell[] Ends = new HexCell[6];
+            for (HexDirection i = HexDirection.NE; i <= HexDirection.NW; i++)
+            {
+                for (int j = 0; j < r; j++)
+                {
+                    Start = Start.GetNeighbor(i);
+                    if (Start == null)
+                    {
+                        break;
+                    }
+                }
+                Ends[(int)i] = Start;
+                Start = this;
+
+            }
+
+            for (HexDirection i = HexDirection.NE; i <= HexDirection.NW; i++)
+            {
+                Start = Ends[(int)i];
+                if (Start != null)
+                {
+                    results.Add(Start);
+                    for (int j = 0; j < r; j++)
+                    {
+                        Start = Start.GetNeighbor(i);
+                        if (Start == null)
+                            break;
+                        results.Add(Start);
+                    }
+                }
+                else
+                {
+                    Start = Ends[(int)(i + 1) % 6];
+                    if (Start != null)
+                    {
+                        HexDirection dopp = i.Opposite();
+                        for (int j = 0; j < r; j++)
+                        {
+                            Start = Start.GetNeighbor(dopp);
+                            if (Start == null)
+                                break;
+                            results.Add(Start);
+                        }
+                    }
+                }
+            }
+
+            return results;
         }
 
         public HexCell GetNeighbor(HexDirection direction)
@@ -127,8 +252,8 @@ namespace HexMap
 
         public void AddRoad(HexDirection direction)
         {
-            if (!roads[(int)direction]
-                && !HasRiverThroughEdge(direction)
+            if (//!roads[(int)direction] &&
+                 !HasRiverThroughEdge(direction)
                 && !IsSpecial
                 && !GetNeighbor(direction).IsSpecial
                 && GetElevationDifference(direction) <= 1)
@@ -160,6 +285,8 @@ namespace HexMap
             neighbors[index].roads[(int)((HexDirection)index).Opposite()] = state;
             neighbors[index].RefreshSelfOnly();
             RefreshSelfOnly();
+            HexMapMgr.Instance.RefreshRoad(this);
+            HexMapMgr.Instance.RefreshRoad(neighbors[index]);
         }
 
         bool IsValidRiverDestination(HexCell neighbor)
@@ -186,7 +313,7 @@ namespace HexMap
             if (visibility == 1)
             {
                 IsExplored = true;
-                ShaderData.RefreshVisibility(this);
+                //ShaderData.RefreshVisibility(this);
             }
         }
 
@@ -195,7 +322,7 @@ namespace HexMap
             visibility -= 1;
             if (visibility == 0)
             {
-                ShaderData.RefreshVisibility(this);
+                //ShaderData.RefreshVisibility(this);
             }
         }
 
@@ -287,6 +414,8 @@ namespace HexMap
                 }
             }
             writer.Write((byte)roadFlags);
+            writer.Write(terrainCost);
+            writer.Write(featureCost);
             //writer.Write(IsExplored);
         }
 
@@ -298,15 +427,13 @@ namespace HexMap
             int z = reader.ReadInt32();
             xz = new Vector2Int(x, z);
             coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-
-            //terrainTypeIndex = reader.ReadByte();
-            //terrainOpacity = reader.ReadInt32();
-            //ShaderData.RefreshTerrain(this);
+            hexagon = Hexagon.FromXZ(x, z);
 
             elevation = reader.ReadByte();
             RefreshPosition();
             waterLevel = reader.ReadByte();
             int Count = reader.ReadByte();
+            features.Clear();
             for (int i = 0; i < Count; i++)
             {
                 features.Add(reader.ReadInt32());
@@ -340,7 +467,8 @@ namespace HexMap
             {
                 roads[i] = (roadFlags & (1 << i)) != 0;
             }
-
+            terrainCost = reader.ReadInt32();
+            featureCost = reader.ReadInt32();
             //IsExplored = reader.ReadBoolean();
             //ShaderData.RefreshVisibility(this);
             //HexCellShader.RefreshVisibility(this);
@@ -354,14 +482,16 @@ namespace HexMap
             if (visibility != 0)
             {
                 visibility = 0;
-                ShaderData.RefreshVisibility(this);
+                //ShaderData.RefreshVisibility(this);
                 //HexCellShader.RefreshVisibility(this);
             }
         }
 
 
 #if UNITY_EDITOR
+        [JsonIgnore]
         public RectTransform uiRect;
+        [JsonIgnore]
         Text label;
 
         public void EnableHighlight(Color color)
@@ -389,6 +519,7 @@ namespace HexMap
                 label = uiRect.GetComponent<Text>();
 
             label.text = text;
+            label.enabled = true;
         }
 
         public void SetCoordinateLabel()
@@ -399,7 +530,9 @@ namespace HexMap
                 label = uiRect.GetComponent<Text>();
 
             label.fontSize = 3;
-            label.text = coordinates.ToStringOnSpearateLines();
+            //label.text = coordinates.ToStringOnSpearateLines();
+            label.text = hexagon.ToStringOnSpearateLines();
+            label.enabled = true;
         }
 
         public void SetDistanceLabel()
@@ -411,6 +544,31 @@ namespace HexMap
 
             label.fontSize = 6;
             label.text = distance == int.MaxValue ? "" : distance.ToString();
+            label.enabled = true;
+        }
+
+        public void SetIdLabel()
+        {
+            if (uiRect == null)
+                return;
+            if (label == null)
+                label = uiRect.GetComponent<Text>();
+
+            label.fontSize = 6;
+            label.text = id.ToString();
+            label.enabled = true;
+        }
+
+        public void SetXZLabel()
+        {
+            if (uiRect == null)
+                return;
+            if (label == null)
+                label = uiRect.GetComponent<Text>();
+
+            label.fontSize = 3;
+            label.text = xz.ToString();
+            label.enabled = true;
         }
 
         public void ClearLabel()
@@ -420,6 +578,7 @@ namespace HexMap
             if (label == null)
                 label = uiRect.GetComponent<Text>();
             label.text = "";
+            label.enabled = false;
         }
 
         public void RefreshFeature()

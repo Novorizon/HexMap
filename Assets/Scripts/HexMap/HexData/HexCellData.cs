@@ -9,30 +9,58 @@ namespace HexMap
     [Serializable]
     public partial class HexCell
     {
-
         public Vector2Int chunkCoordinate;
-        [JsonIgnore] public HexChunkMgr ChunkMgr;
+        [JsonIgnore]
+        //[NonSerialized]
+        public HexChunkMgr ChunkMgr;
 
+        [SerializeField]
         public int id;
         public Vector3 center;
+        [SerializeField]
         public HexCoordinates coordinates;
+
+        [JsonIgnore]
+        public Hexagon hexagon;
+        [SerializeField]
         public Vector2Int xz;
 
         [NonSerialized]
-        HexCell[] neighbors;
-        public bool[] roads;
+        [JsonIgnore]
+        public HexCell[] neighbors;
 
-        //[HexMap] public Color color;
+        [SerializeField]
+        int terrainTypeIndex;
+        [SerializeField]
+        int terrainOpacity;
+        [SerializeField]
+        public int terrainCost;
+
+        [SerializeField]
         int elevation = int.MinValue;
+        [SerializeField]
         int waterLevel;
+        [SerializeField]
         int specialIndex;
         public List<int> features;
-        int terrainTypeIndex;
+        public int featureCost;
+
+        public bool[] roads;//道路朝向
+        [SerializeField]
+        int road;//道路纹理索引
+        [SerializeField]
+        int roadOpacity;//道路纹理透明度
+        [SerializeField]
+        float roadWidthIF;//道路宽度系数
+        [SerializeField]
+        float roadNoiseIF;//道路噪声系数
+        //public RoadNoiseType roadNoiseType;
+
         int distance;
-        int terrainOpacity;
 
-
+        [SerializeField]
         bool hasIncomingRiver;
+        [SerializeField]
         bool hasOutgoingRiver;
         HexDirection incomingRiver;
         HexDirection outgoingRiver;
@@ -47,16 +75,20 @@ namespace HexMap
         }
         public bool Explorable { get; set; }//视野阻挡
 
-        public HexCellShaderData ShaderData { get; set; }
+        //public HexCellShaderData ShaderData { get; set; }
         public int Distance
         {
             get { return distance; }
             set { distance = value; }
         }
 
+        [JsonIgnore]
         public HexCell PathFrom { get; set; }
+        [JsonIgnore]
         public int SearchHeuristic { get; set; }
+        [JsonIgnore]
         public int SearchPriority { get { return distance + SearchHeuristic; } }
+        [JsonIgnore]
         public HexCell NextWithSamePriority { get; set; }
         public int SearchPhase { get; set; }
 
@@ -69,24 +101,20 @@ namespace HexMap
                 if (terrainTypeIndex != value)
                 {
                     terrainTypeIndex = value;
-                    ShaderData.RefreshTerrain(this);
+                    //ShaderData.RefreshTerrain(this);
                 }
             }
         }
 
+        public int Road { get { return road; } set { road = value; } }
 
-        public int TerrainOpacity
-        {
-            get { return terrainOpacity; }
-            set
-            {
-                if (terrainOpacity != value)
-                {
-                    terrainOpacity = value;
-                    ShaderData.RefreshTerrain(this);
-                }
-            }
-        }
+        public float RoadWidthIF { get { return roadWidthIF; } set { roadWidthIF = value; } }
+
+        public float RoadNoiseIF { get { return roadNoiseIF; } set { roadNoiseIF = value; } }
+
+        public int TerrainOpacity { get { return terrainOpacity; } set { terrainOpacity = value; } }
+
+        public int RoadOpacity { get { return roadOpacity; } set { roadOpacity = value; } }
 
 
 
@@ -102,15 +130,9 @@ namespace HexMap
                 elevation = value;
                 if (ViewElevation != originalViewElevation)
                 {
-                    ShaderData.ViewElevationChanged();
-                    //HexCellShader.ViewElevationChanged();
+                    //ShaderData.ViewElevationChanged();
                 }
-                Vector3 position = center;
-                position.y = value * HexMetrics.elevationStep;
-                position.y += (HexMetrics.SampleNoise(position).y * 2f - 1f) * HexMetrics.elevationPerturbStrength;
-
-                center = position;
-
+                RefreshPosition();
                 ValidateRivers();
 
                 for (int i = 0; i < roads.Length; i++)
@@ -174,7 +196,7 @@ namespace HexMap
                 waterLevel = value;
                 if (ViewElevation != originalViewElevation)
                 {
-                    ShaderData.ViewElevationChanged();
+                    //ShaderData.ViewElevationChanged();
                     //HexCellShader.ViewElevationChanged();
                 }
                 ValidateRivers();

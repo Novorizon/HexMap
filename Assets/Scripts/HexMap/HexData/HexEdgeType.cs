@@ -7,3 +7,10 @@ public enum HexEdgeType
     Slope, 
     Cliff
 }
+public enum RoadNoiseType
+{
+    [LabelText("Perlin噪声")]
+    Perlin,
+    [LabelText("分形布尔噪声")]
+    FBM,
+}
