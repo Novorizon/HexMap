@@ -2,15 +2,6 @@
 
 public static class HexMetrics
 {
-
-    //public static readonly long[] FeatureMask = new long[3] { 0xFFFF, 0xFFFF0000, 0xFFFF00000000 };
-    //public static readonly long FeatureRandomNumberMask = 0x0010000000000000;
-    //public static readonly long FeatureRandomDirectionMask = 0x0020000000000000;
-    //public static readonly long FeatureLevelMask = 0x000F000000000000;
-    //public static readonly int FeatureLevelBit = 48;
-    //public static readonly int FeatureRandomNumberBit = 52;
-    //public static readonly int FeatureRandomDirectionBit = 53;
-    //public static readonly int[] FeatureBit = new int[3] { 0, 16, 32 };
     public static readonly int FeatureMask = 0xFFFF;
     public static readonly int FeatureClearMask = 0x0000FFFF;
     public static readonly int FeatureRandomNumberMask = 0x00010000;
@@ -86,7 +77,7 @@ public static class HexMetrics
 
     public const float bridgeDesignLength = 7f;
 
-    public const float noiseScale = 0.003f;
+    public static float noiseIF = 0.003f;
 
     public const int chunkSizeX = 5, chunkSizeZ = 5;
 
@@ -130,7 +121,7 @@ public static class HexMetrics
     {
         if (!useNoise)
             return Vector4.zero;
-        return noiseSource.GetPixelBilinear(position.x * noiseScale, position.z * noiseScale);
+        return noiseSource.GetPixelBilinear(position.x * noiseIF, position.z * noiseIF);
     }
 
     public static void InitializeHashGrid(int seed)

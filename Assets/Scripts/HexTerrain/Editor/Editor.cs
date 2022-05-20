@@ -44,6 +44,7 @@ public partial class HexTerrain
         cellMetreX = cellCountX * radius * HexMetrics.outerToInner * 2;
         cellMetreZ = 1.5f * cellCountZ * radius + 0.5f * radius;
         HexMetrics.Radius = radius;
+        HexMetrics.noiseIF = noiseIF;
     }
 
 

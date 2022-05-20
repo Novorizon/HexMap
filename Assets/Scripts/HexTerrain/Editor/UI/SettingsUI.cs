@@ -32,11 +32,6 @@ public partial class HexTerrain
     int version = 0;
 
 
-    [LabelText("噪点图"), ToggleLeft, PropertySpace(SpaceBefore = 30), PropertyOrder((int)PropertySettings.Chunk), OnValueChanged("OnIsNoiseChanged"), LabelWidth(3), HorizontalGroup("ID "), ShowIf("IsSettings")]
-    public bool IsNoise;
-    [HideLabel, PropertyOrder((int)PropertySettings.Chunk), PropertySpace(SpaceBefore = 30), OnValueChanged("OnNoiseChanged"), LabelWidth(50), HorizontalGroup("ID ", marginLeft: -100), ShowIf("IsSettings")]
-    public Texture2D Noise;
-
 
     [Title("地图块")]
     [LabelText("单元格半径"), PropertySpace(SpaceBefore = 30), PropertyOrder((int)PropertySettings.Chunk), LabelWidth(60), OnValueChanged("OnValueChanged"), HorizontalGroup("radius ", marginRight: 100), ShowIf("IsSettings")]
@@ -60,7 +55,17 @@ public partial class HexTerrain
     [HideLabel, SuffixLabel("(m)"), PropertyOrder((int)PropertySettings.Chunk), PropertySpace(SpaceBefore = 10, SpaceAfter = 30), LabelWidth(30), ReadOnly, HorizontalGroup("cellCountZ "), ShowIf("IsSettings")]
     public float cellMetreZ = 8;
 
-    [LabelText("显示网格"), ToggleLeft, PropertySpace(SpaceBefore = 10), PropertyOrder((int)PropertySettings.Chunk), HorizontalGroup("showGrid"), OnValueChanged("OnShowGridChanged"), ShowIf("IsSettings")]
+
+
+    [LabelText("噪点图"), ToggleLeft, PropertySpace(SpaceBefore = 30), PropertyOrder((int)PropertySettings.Chunk), OnValueChanged("OnIsNoiseChanged"), LabelWidth(3), HorizontalGroup("ID "), ShowIf("IsSettings")]
+    public bool IsNoise;
+    [HideLabel, PropertyOrder((int)PropertySettings.Chunk), PropertySpace(SpaceBefore = 30), OnValueChanged("OnNoiseChanged"), LabelWidth(50), HorizontalGroup("ID ", marginLeft: -100), ShowIf("IsSettings")]
+    public Texture2D Noise;
+
+    [LabelText("噪声系数"), PropertySpace(SpaceBefore = 10), PropertyOrder((int)PropertySettings.Chunk), OnValueChanged("OnValueChanged"), LabelWidth(60), ShowIf("IsSettings")]
+    public float noiseIF = 0.002f;
+
+    [LabelText("显示网格"), ToggleLeft, PropertySpace(SpaceBefore = 30), PropertyOrder((int)PropertySettings.Chunk), HorizontalGroup("showGrid"), OnValueChanged("OnShowGridChanged"), ShowIf("IsSettings")]
     public bool showGrid = false;
     [LabelText("显示3D坐标"), ToggleLeft, PropertySpace(SpaceBefore = 10), PropertyOrder((int)PropertySettings.Chunk), HorizontalGroup("showCoordinate"), OnValueChanged("OnShowCoordinateChanged"), ShowIf("IsSettings")]
     public bool showCoordinate = false;
